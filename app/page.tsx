@@ -1,4 +1,32 @@
+'use client';
+
+import { useState } from 'react';
+
 export default function Home() {
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const form = e.currentTarget;
+    
+    try {
+      const response = await fetch('https://formspree.io/f/xwpkqgow', {
+        method: 'POST',
+        body: new FormData(form),
+        headers: {
+          Accept: 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        setSubmitted(true);
+        form.reset();
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       {/* Hero Section */}
@@ -225,47 +253,84 @@ export default function Home() {
 
       {/* Waitlist */}
       <div id="waitlist" className="bg-gradient-to-b from-blue-600 to-blue-700 py-20">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold mb-4 text-white">
-            Get Early Access
-          </h2>
-          <p className="text-xl text-blue-100 mb-8">
-            Join the waitlist to get 3 months free when we launch
-          </p>
+        <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+          {!submitted ? (
+            <>
+              <div className="text-center mb-8">
+                <h2 className="text-4xl font-bold mb-4 text-white">
+                  Get Early Access
+                </h2>
+                <p className="text-xl text-blue-100">
+                  Join the waitlist to get 3 months free when we launch
+                </p>
+              </div>
 
-          <form className="space-y-4">
-            <input
-              type="email"
-              placeholder="Your email"
-              className="w-full px-6 py-4 rounded-lg text-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
-              required
-            />
-            <input
-              type="text"
-              placeholder="Your name (optional)"
-              className="w-full px-6 py-4 rounded-lg text-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
-            />
-            <select className="w-full px-6 py-4 rounded-lg text-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-300">
-              <option value="">I'm a...</option>
-              <option value="freelancer">Freelancer</option>
-              <option value="contractor">Contractor</option>
-              <option value="gig">Gig Worker</option>
-              <option value="creator">Content Creator</option>
-              <option value="other">Other</option>
-            </select>
-            <button
-              type="submit"
-              className="w-full bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-50 transition-colors shadow-lg hover:shadow-xl"
-            >
-              Join the Waitlist
-            </button>
-          </form>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Your email"
+                  className="w-full px-6 py-4 rounded-lg text-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  required
+                />
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Your name (optional)"
+                  className="w-full px-6 py-4 rounded-lg text-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                />
+                <select 
+                  name="userType"
+                  className="w-full px-6 py-4 rounded-lg text-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                >
+                  <option value="">I'm a...</option>
+                  <option value="freelancer">Freelancer</option>
+                  <option value="contractor">Contractor</option>
+                  <option value="gig">Gig Worker</option>
+                  <option value="creator">Content Creator</option>
+                  <option value="other">Other</option>
+                </select>
+                <textarea
+                  name="stress"
+                  placeholder="What's your biggest financial stress? (optional)"
+                  rows={3}
+                  className="w-full px-6 py-4 rounded-lg text-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-300"
+                />
+                <button
+                  type="submit"
+                  className="w-full bg-white text-blue-600 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-blue-50 transition-colors shadow-lg hover:shadow-xl"
+                >
+                  Join the Waitlist
+                </button>
+              </form>
 
-          <div className="mt-8 space-y-2 text-blue-100">
-            <p>✅ 3 months free for early adopters</p>
-            <p>✅ Help shape the product</p>
-            <p>✅ Skip the line when we launch</p>
-          </div>
+              <div className="mt-8 space-y-2 text-blue-100 text-center">
+                <p>✅ 3 months free for early adopters</p>
+                <p>✅ Help shape the product</p>
+                <p>✅ Skip the line when we launch</p>
+              </div>
+            </>
+          ) : (
+            <div className="text-center">
+              <div className="text-6xl mb-6">🎉</div>
+              <h2 className="text-4xl font-bold mb-4 text-white">
+                You're on the list!
+              </h2>
+              <p className="text-xl text-blue-100 mb-8">
+                Check your email for next steps.
+              </p>
+              <div className="bg-blue-800 rounded-lg p-6 text-left">
+                <p className="text-blue-100 mb-4">
+                  In the meantime:
+                </p>
+                <ul className="space-y-2 text-blue-100">
+                  <li>📧 Watch for our welcome email (check spam if needed)</li>
+                  <li>👥 Share with freelancer friends who need this</li>
+                  <li>💬 Reply to our email with feedback - we read everything</li>
+                </ul>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -275,8 +340,11 @@ export default function Home() {
           <p className="text-lg mb-4">
             SmoothPay - Steady income for freelancers
           </p>
-          <p className="text-sm">
+          <p className="text-sm mb-2">
             🔒 Bank-level security · 📊 Your data stays private · 🚀 Launching Q1 2026
+          </p>
+          <p className="text-xs text-slate-500 mt-4">
+            Built by Akimoto Satoshi, a freelancer who got tired of income anxiety.
           </p>
         </div>
       </footer>
